@@ -2,7 +2,7 @@
 
 namespace FrozenSilence\CrossDatabase\Eloquent\Concerns;
 
-use HoyFrozenSilencevoy\CrossDatabase\CanCrossDatabaseShazaamInterface;
+use FrozenSilence\CrossDatabase\CanCrossDatabaseShazaamInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
