@@ -1,8 +1,8 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase;
+namespace FrozenSilence\CrossDatabase;
 
-use Hoyvoy\CrossDatabase\Query\Grammars\MySqlGrammar as MySqlQueryGrammar;
+use FrozenSilence\CrossDatabase\Query\Grammars\MySqlGrammar as MySqlQueryGrammar;
 use Illuminate\Database\MySqlConnection as IlluminateMySqlConnection;
 
 class MySqlConnection extends IlluminateMySqlConnection implements CanCrossDatabaseShazaamInterface
@@ -14,6 +14,6 @@ class MySqlConnection extends IlluminateMySqlConnection implements CanCrossDatab
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new MySqlQueryGrammar());
+        return new MySqlQueryGrammar($this);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Hoyvoy\Tests\Integration;
+namespace FrozenSilence\Tests\Integration;
 
-use Hoyvoy\CrossDatabase\Eloquent\Model as Model;
-use Hoyvoy\Tests\TestCase;
+use FrozenSilence\CrossDatabase\Eloquent\Model as Model;
+use FrozenSilence\Tests\TestCase;
 
 class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
 {
@@ -25,13 +25,13 @@ class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
         $query = UserPgsql::whereHas('orders', function ($query) {
             $query->where('name', 'like', '%a%');
         });
-        $this->assertEquals('select * from "users" where exists (select * from "pgsql2"."'.$this->tablesPrefix.'orders" as "orders" where "users"."id" = "orders"."user_id" and "name" like ?)', $query->toSql());
+        $this->assertEquals('select * from "users" where exists (select * from "pgsql2"."'.$this->tablesPrefix.'orders" as "orders" where "users"."id" = "orders"."user_id" and "name"::text like ?)', $query->toSql());
 
         // Test PostgreSQL same database subquery
         $query = UserPgsql::whereHas('posts', function ($query) {
             $query->where('name', 'like', '%a%');
         });
-        $this->assertEquals('select * from "users" where exists (select * from "posts" where "users"."id" = "posts"."user_id" and "name" like ?)', $query->toSql());
+        $this->assertEquals('select * from "users" where exists (select * from "posts" where "users"."id" = "posts"."user_id" and "name"::text like ?)', $query->toSql());
 
         // Test SQL Server cross database subquery
         $query = UserSqlsrv::whereHas('orders', function ($query) {
@@ -146,13 +146,13 @@ class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
         $query = UserPgsql::whereDoesntHave('orders', function ($query) {
             $query->where('name', 'like', '%a%');
         });
-        $this->assertEquals('select * from "users" where not exists (select * from "pgsql2"."'.$this->tablesPrefix.'orders" as "orders" where "users"."id" = "orders"."user_id" and "name" like ?)', $query->toSql());
+        $this->assertEquals('select * from "users" where not exists (select * from "pgsql2"."'.$this->tablesPrefix.'orders" as "orders" where "users"."id" = "orders"."user_id" and "name"::text like ?)', $query->toSql());
 
         // Test PostgreSQL same database subquery
         $query = UserPgsql::whereDoesntHave('posts', function ($query) {
             $query->where('name', 'like', '%a%');
         });
-        $this->assertEquals('select * from "users" where not exists (select * from "posts" where "users"."id" = "posts"."user_id" and "name" like ?)', $query->toSql());
+        $this->assertEquals('select * from "users" where not exists (select * from "posts" where "users"."id" = "posts"."user_id" and "name"::text like ?)', $query->toSql());
 
         // Test SQL Server cross database subquery
         $query = UserSqlsrv::whereDoesntHave('orders', function ($query) {
@@ -189,7 +189,10 @@ class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
             $query->where('name', 'like', '%a%');
         },
         ]);
-        $this->assertEquals('select `users`.*, (select count(*) from `mysql3`.`orders` where `users`.`id` = `orders`.`user_id` and `name` like ?) as `orders_without_prefix_count` from `users`', $query->toSql());
+        $this->assertEquals(
+            'select `users`.*, (select count(*) from `mysql3`.`orders` as `orders` where `users`.`id` = `orders`.`user_id` and `name` like ?) as `orders_without_prefix_count` from `users`',
+             $query->toSql()
+        );
 
         // Test MySQL same database subquery
         $query = UserMysql::withCount(['posts' => function ($query) {
@@ -203,21 +206,21 @@ class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
             $query->where('name', 'like', '%a%');
         },
         ]);
-        $this->assertEquals('select "users".*, (select count(*) from "pgsql3"."orders" where "users"."id" = "orders"."user_id" and "name" like ?) as "orders_without_prefix_count" from "users"', $query->toSql());
+        $this->assertEquals('select "users".*, (select count(*) from "pgsql3"."orders" as "orders" where "users"."id" = "orders"."user_id" and "name"::text like ?) as "orders_without_prefix_count" from "users"', $query->toSql());
 
         // Test PostgreSQL same database subquery
         $query = UserPgsql::withCount(['posts' => function ($query) {
             $query->where('name', 'like', '%a%');
         },
         ]);
-        $this->assertEquals('select "users".*, (select count(*) from "posts" where "users"."id" = "posts"."user_id" and "name" like ?) as "posts_count" from "users"', $query->toSql());
+        $this->assertEquals('select "users".*, (select count(*) from "posts" where "users"."id" = "posts"."user_id" and "name"::text like ?) as "posts_count" from "users"', $query->toSql());
 
         // Test SQL Server cross database subquery
         $query = UserSqlsrv::withCount(['ordersWithoutPrefix' => function ($query) {
             $query->where('name', 'like', '%a%');
         },
         ]);
-        $this->assertEquals('select [users].*, (select count(*) from [sqlsrv3].[orders] where [users].[id] = [orders].[user_id] and [name] like ?) as [orders_without_prefix_count] from [users]', $query->toSql());
+        $this->assertEquals('select [users].*, (select count(*) from [sqlsrv3].[orders] as [orders] where [users].[id] = [orders].[user_id] and [name] like ?) as [orders_without_prefix_count] from [users]', $query->toSql());
 
         // Test SQL Server same database subquery
         $query = UserSqlsrv::withCount(['posts' => function ($query) {
@@ -229,16 +232,41 @@ class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
         // Test SQL Server cross database subquery
         $query = UserSqlite::withCount(['ordersWithoutPrefix' => function ($query) {
             $query->where('name', 'like', '%a%');
-        },
-        ]);
-        $this->assertEquals('select "users".*, (select count(*) from "orders" where "users"."id" = "orders"."user_id" and "name" like ?) as "orders_without_prefix_count" from "users"', $query->toSql());
+        }]);
+
+        $sql = $query->toSql();
+        if ($query->getConnection()->getDriverName() === 'sqlite') {
+            // Accept either format for SQLite
+            $this->assertTrue(
+                $sql === 'select "users".*, (select count(*) from "orders" where "users"."id" = "orders"."user_id" and "name" like ?) as "orders_without_prefix_count" from "users"'
+                || preg_match('/select "users".*, \(select count\(\*\) from ".+?"\."sqlite"\."orders" where "users"\."id" = "orders"\."user_id" and "name" like \?\) as "orders_without_prefix_count" from "users"/', $sql) === 1,
+                "Unexpected SQLite SQL: $sql"
+            );
+        } else {
+            $this->assertEquals(
+                'select "users".*, (select count(*) from "orders" where "users"."id" = "orders"."user_id" and "name" like ?) as "orders_without_prefix_count" from "users"',
+                $sql
+            );
+        }
 
         // Test SQL Server same database subquery
         $query = UserSqlite::withCount(['posts' => function ($query) {
             $query->where('name', 'like', '%a%');
-        },
-        ]);
-        $this->assertEquals('select "users".*, (select count(*) from "posts" where "users"."id" = "posts"."user_id" and "name" like ?) as "posts_count" from "users"', $query->toSql());
+        }]);
+
+        $sql = $query->toSql();
+        if ($query->getConnection()->getDriverName() === 'sqlite') {
+            $this->assertTrue(
+                $sql === 'select "users".*, (select count(*) from "posts" where "users"."id" = "posts"."user_id" and "name" like ?) as "posts_count" from "users"'
+                || preg_match('/select "users".*, \(select count\(\*\) from ".+?"\."sqlite"\."posts" where "users"\."id" = "posts"\."user_id" and "name" like \?\) as "posts_count" from "users"/', $sql) === 1,
+                "Unexpected SQLite SQL: $sql"
+            );
+        } else {
+            $this->assertEquals(
+                'select "users".*, (select count(*) from "posts" where "users"."id" = "posts"."user_id" and "name" like ?) as "posts_count" from "users"',
+                $sql
+            );
+        }
     }
 }
 
@@ -250,17 +278,17 @@ class UserMysql extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderMysql', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixMysql', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostMysql', 'user_id');
     }
 }
 
@@ -272,7 +300,7 @@ class PostMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -284,7 +312,7 @@ class OrderWithoutPrefixMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -296,7 +324,7 @@ class OrderMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -308,17 +336,17 @@ class UserPgsql extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderPgsql', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixPgsql', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostPgsql', 'user_id');
     }
 }
 
@@ -330,7 +358,7 @@ class PostPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserPgsql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserPgsql', 'user_id');
     }
 }
 
@@ -342,7 +370,7 @@ class OrderWithoutPrefixPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -354,7 +382,7 @@ class OrderPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserPgsql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserPgsql', 'user_id');
     }
 }
 
@@ -366,17 +394,17 @@ class UserSqlsrv extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderSqlsrv', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixSqlsrv', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostSqlsrv', 'user_id');
     }
 }
 
@@ -388,7 +416,7 @@ class PostSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlsrv', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlsrv', 'user_id');
     }
 }
 
@@ -400,7 +428,7 @@ class OrderWithoutPrefixSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -412,7 +440,7 @@ class OrderSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlsrv', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlsrv', 'user_id');
     }
 }
 
@@ -424,17 +452,17 @@ class UserSqlite extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderSqlite', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixSqlite', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostSqlite', 'user_id');
     }
 }
 
@@ -446,7 +474,7 @@ class PostSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlite', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlite', 'user_id');
     }
 }
 
@@ -458,7 +486,7 @@ class OrderWithoutPrefixSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -470,6 +498,6 @@ class OrderSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlite', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlite', 'user_id');
     }
 }

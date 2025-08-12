@@ -1,8 +1,8 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase\Eloquent;
+namespace FrozenSilence\CrossDatabase\Eloquent;
 
-use Hoyvoy\CrossDatabase\Eloquent\Concerns\QueriesRelationships as CrossDatabaseQueriesRelationships;
+use FrozenSilence\CrossDatabase\Eloquent\Concerns\QueriesRelationships as CrossDatabaseQueriesRelationships;
 use Illuminate\Database\Eloquent\Builder as IlluminateEloquentBuilder;
 use Illuminate\Database\Eloquent\Concerns\QueriesRelationships as IlluminateEloquentQueriesRelationships;
 

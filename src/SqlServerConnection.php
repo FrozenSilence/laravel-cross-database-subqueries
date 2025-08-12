@@ -1,8 +1,8 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase;
+namespace FrozenSilence\CrossDatabase;
 
-use Hoyvoy\CrossDatabase\Query\Grammars\SqlServerGrammar as SqlServerQueryGrammar;
+use FrozenSilence\CrossDatabase\Query\Grammars\SqlServerGrammar as SqlServerQueryGrammar;
 use Illuminate\Database\SqlServerConnection as IlluminateSqlServerConnection;
 
 class SqlServerConnection extends IlluminateSqlServerConnection implements CanCrossDatabaseShazaamInterface
@@ -14,6 +14,6 @@ class SqlServerConnection extends IlluminateSqlServerConnection implements CanCr
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new SqlServerQueryGrammar());
+        return new SqlServerQueryGrammar($this);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase\Eloquent;
+namespace FrozenSilence\CrossDatabase\Eloquent;
 
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 
@@ -11,7 +11,7 @@ abstract class Model extends IlluminateModel
      *
      * @param \Illuminate\Database\Query\Builder $query
      *
-     * @return \oyvoy\Support\CrossDatabase\Eloquent\Builder|static
+     * @return \FrozenSilence\Support\CrossDatabase\Eloquent\Builder|static
      */
     public function newEloquentBuilder($query)
     {

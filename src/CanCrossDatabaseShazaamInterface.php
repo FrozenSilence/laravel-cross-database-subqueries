@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase;
+namespace FrozenSilence\CrossDatabase;
 
 interface CanCrossDatabaseShazaamInterface
 {
