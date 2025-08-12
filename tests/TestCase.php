@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoyvoy\Tests;
+namespace FrozenSilence\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -18,7 +18,7 @@ class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Hoyvoy\CrossDatabase\CrossDatabaseServiceProvider::class,
+            \FrozenSilence\CrossDatabase\CrossDatabaseServiceProvider::class,
         ];
     }
 

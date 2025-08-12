@@ -1,6 +1,6 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase\Query\Grammars;
+namespace FrozenSilence\CrossDatabase\Query\Grammars;
 
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\PostgresGrammar as IlluminatePostgresGrammar;

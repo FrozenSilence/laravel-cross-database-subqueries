@@ -1,9 +1,9 @@
 <?php
 
-namespace Hoyvoy\Tests\Integration;
+namespace FrozenSilence\Tests\Integration;
 
-use Hoyvoy\CrossDatabase\Eloquent\Model as Model;
-use Hoyvoy\Tests\TestCase;
+use FrozenSilence\CrossDatabase\Eloquent\Model as Model;
+use FrozenSilence\Tests\TestCase;
 
 class DatabaseEloquentSubqueriesCrossDatabaseTest extends TestCase
 {
@@ -250,17 +250,17 @@ class UserMysql extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderMysql', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixMysql', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostMysql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostMysql', 'user_id');
     }
 }
 
@@ -272,7 +272,7 @@ class PostMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -284,7 +284,7 @@ class OrderWithoutPrefixMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -296,7 +296,7 @@ class OrderMysql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -308,17 +308,17 @@ class UserPgsql extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderPgsql', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixPgsql', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostPgsql', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostPgsql', 'user_id');
     }
 }
 
@@ -330,7 +330,7 @@ class PostPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserPgsql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserPgsql', 'user_id');
     }
 }
 
@@ -342,7 +342,7 @@ class OrderWithoutPrefixPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -354,7 +354,7 @@ class OrderPgsql extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserPgsql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserPgsql', 'user_id');
     }
 }
 
@@ -366,17 +366,17 @@ class UserSqlsrv extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderSqlsrv', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixSqlsrv', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostSqlsrv', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostSqlsrv', 'user_id');
     }
 }
 
@@ -388,7 +388,7 @@ class PostSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlsrv', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlsrv', 'user_id');
     }
 }
 
@@ -400,7 +400,7 @@ class OrderWithoutPrefixSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -412,7 +412,7 @@ class OrderSqlsrv extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlsrv', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlsrv', 'user_id');
     }
 }
 
@@ -424,17 +424,17 @@ class UserSqlite extends Model
 
     public function orders()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderSqlite', 'user_id');
     }
 
     public function ordersWithoutPrefix()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\OrderWithoutPrefixSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\OrderWithoutPrefixSqlite', 'user_id');
     }
 
     public function posts()
     {
-        return $this->hasMany('Hoyvoy\Tests\Integration\PostSqlite', 'user_id');
+        return $this->hasMany('FrozenSilence\Tests\Integration\PostSqlite', 'user_id');
     }
 }
 
@@ -446,7 +446,7 @@ class PostSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlite', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlite', 'user_id');
     }
 }
 
@@ -458,7 +458,7 @@ class OrderWithoutPrefixSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserMysql', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserMysql', 'user_id');
     }
 }
 
@@ -470,6 +470,6 @@ class OrderSqlite extends Model
 
     public function user()
     {
-        return $this->belongsTo('Hoyvoy\Tests\Integration\UserSqlite', 'user_id');
+        return $this->belongsTo('FrozenSilence\Tests\Integration\UserSqlite', 'user_id');
     }
 }

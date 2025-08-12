@@ -1,8 +1,8 @@
 <?php
 
-namespace Hoyvoy\CrossDatabase;
+namespace FrozenSilence\CrossDatabase;
 
-use Hoyvoy\CrossDatabase\Query\Grammars\PostgresGrammar as PostgresQueryGrammar;
+use FrozenSilence\CrossDatabase\Query\Grammars\PostgresGrammar as PostgresQueryGrammar;
 use Illuminate\Database\PostgresConnection as IlluminatePostgresConnection;
 
 class PostgresConnection extends IlluminatePostgresConnection implements CanCrossDatabaseShazaamInterface
